@@ -6,7 +6,8 @@ const Constraint = Matter.Constraint;
 var engine, world, ground;
 var backgroundImg;
 var tower, towerImg;
-
+var canhao, canhaoAng;
+var cannonBall;
 
 
 function preload() {
@@ -20,6 +21,9 @@ function setup() {
   engine = Engine.create();
   world = engine.world;
   
+  canhaoAng = 20;
+  canhao = new Canhao(180, 110, 130, 100, canhaoAng)
+
  options={
  isStatic:true
  }
@@ -29,12 +33,17 @@ function setup() {
 
  tower = Bodies.rectangle(160, 350, 160, 310, options);
  World.add(world, tower);
+
+ cannonBall = new CannonBall(canhao.posX, canhao.posY);
  
 }
 
 function draw() {
   background(189);
   image(backgroundImg, 0, 0, 1200, 600);
+  
+  canhao.display();
+  cannonBall.display();
   
   Engine.update(engine);
  

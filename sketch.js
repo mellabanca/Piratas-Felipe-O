@@ -1,3 +1,25 @@
+//Revisão sobre Matrizes
+//Exemplos
+var matriz1 = [2,78,21,36,45];
+console.log(matriz1);
+
+var matriz2 = ["Melissa", 23, true, "Felipe", 15, false];
+//console.log(matriz2);
+
+var matriz3 = [matriz1, matriz2];
+//console.log(matriz3);
+
+//console.log(matriz1[3]);
+//console.log(matriz2[2]);
+//console.log(matriz3[1][4]);
+
+matriz1.push(1000);
+//console.log(matriz1);
+matriz1.pop();
+//console.log(matriz1);
+
+
+
 const Engine = Matter.Engine;
 const World = Matter.World;
 const Bodies = Matter.Bodies;
@@ -21,6 +43,7 @@ function setup() {
   engine = Engine.create();
   world = engine.world;
   
+  angleMode(DEGREES);
   canhaoAng = 20;
   canhao = new Canhao(180, 110, 130, 100, canhaoAng)
 
@@ -54,4 +77,11 @@ function draw() {
   image(towerImg,tower.position.x, tower.position.y, 160, 310);
   pop();
    
+}
+
+
+function keyReleased() {
+  if(keyCode === DOWN_ARROW) {
+    cannonBall.shoot();
+  }
 }

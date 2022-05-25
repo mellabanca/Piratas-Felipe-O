@@ -29,7 +29,9 @@ var engine, world, ground;
 var backgroundImg;
 var tower, towerImg;
 var canhao, canhaoAng;
-var cannonBall;
+var cannonBall
+var cannonBalls = [];
+var boat;
 
 
 function preload() {
@@ -57,8 +59,7 @@ function setup() {
  tower = Bodies.rectangle(160, 350, 160, 310, options);
  World.add(world, tower);
 
- cannonBall = new CannonBall(canhao.posX, canhao.posY);
- 
+ boat = new Boat(width-79, height-60, 170, 170, -80);
 }
 
 function draw() {
@@ -66,7 +67,6 @@ function draw() {
   image(backgroundImg, 0, 0, 1200, 600);
   
   canhao.display();
-  cannonBall.display();
   
   Engine.update(engine);
  
@@ -77,11 +77,30 @@ function draw() {
   image(towerImg,tower.position.x, tower.position.y, 160, 310);
   pop();
    
+  for(var i = 0; i < cannonBalls.length; i ++) {
+    cannonShow(cannonBalls[i], i);
+  }
+
+  Matter.Body.setVelocity(boat.body, {x:-0.9, y:0});
+  boat.display();
 }
 
 
 function keyReleased() {
   if(keyCode === DOWN_ARROW) {
-    cannonBall.shoot();
+    cannonBalls[cannonBalls.length - 1].shoot();
+  }
+}
+
+function keyPressed() {
+  if(keyCode === DOWN_ARROW) {
+    var cannonBall = new CannonBall(canhao.posX, canhao.posY);
+    cannonBalls.push(cannonBall);
+  }
+}
+
+function cannonShow(ball, i) {
+  if(ball) {
+    ball.display();
   }
 }

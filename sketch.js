@@ -27,16 +27,21 @@ const Constraint = Matter.Constraint;
 
 var engine, world, ground;
 var backgroundImg;
-var tower, towerImg;
+var tower, towerImg;;
 var canhao, canhaoAng;
 var cannonBall
 var cannonBalls = [];
 var boat;
-
+var boats = [];
+var boatAnimation = [];
+var boatDados, boatSpritesheet;
+ 
 
 function preload() {
   backgroundImg = loadImage("./assets/background.gif");
   towerImg = loadImage("./assets/tower.png");
+  boatDados = loadJSON("./assets/boat/boat.json");
+  boatSpritesheet = loadImage("./assets/boat/boat.png");
 }
 
 function setup() {
@@ -59,7 +64,12 @@ function setup() {
  tower = Bodies.rectangle(160, 350, 160, 310, options);
  World.add(world, tower);
 
- boat = new Boat(width-79, height-60, 170, 170, -80);
+ var boatFrames = boatDados.frames;
+ for(var i = 0; i < boatFrames.length; i++){
+   var pos = boatFrames[i].position;
+   var img = boatSpritesheet.get(pos.x, pos.y, pos.w, pos.h);
+   boatAnimation.push(img);
+ }
 }
 
 function draw() {
@@ -79,10 +89,11 @@ function draw() {
    
   for(var i = 0; i < cannonBalls.length; i ++) {
     cannonShow(cannonBalls[i], i);
+    colisao(i);
   }
 
-  Matter.Body.setVelocity(boat.body, {x:-0.9, y:0});
-  boat.display();
+  boatShow();
+
 }
 
 
@@ -102,5 +113,46 @@ function keyPressed() {
 function cannonShow(ball, i) {
   if(ball) {
     ball.display();
+    if(ball.body.position.x >= width || ball.body.position.y >= height-50) { 
+      ball.removeBall(i);
+    }
+  }
+}
+
+function boatShow() {
+  if (boats.length > 0) {
+    if (boats[boats.length-1] === undefined || boats[boats.length -1].body.position.x < width -300) {
+      var positions = [-40, -60, -70, -20];
+      var positions2 = random(positions);
+      var boat = new Boat(width, height-100, 170, 170, positions2, boatAnimation);
+      boats.push(boat)
+    }
+
+    for (var i = 0; i < boats.length; i ++) {
+      if (boats[i]) {
+        Matter.Body.setVelocity(boats[i].body, {x:-0.9, y:0});
+        boats[i].display();
+        boats[i].animate();
+      }
+    }
+  }
+  else {
+    var boat = new Boat(width, height-60, 170, 170, -80, boatAnimation);
+    boats.push(boat);
+  }
+}
+
+function colisao(index) {
+  for (var i = 0; i < boats.length; i ++) { 
+    if(cannonBalls[index] !== undefined && boats[i] !== undefined){ 
+      var collisaoVer = Matter.SAT.collides(cannonBalls[index].body, boats[i].body);
+
+      if(collisaoVer.collided) {
+        boats[i].removeBoat(i);
+        Matter.World.remove(world, cannonBalls[index].body);
+        delete cannonBalls[index];
+
+      }
+    }
   }
 }

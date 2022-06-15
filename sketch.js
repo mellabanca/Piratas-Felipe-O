@@ -35,13 +35,21 @@ var boat;
 var boats = [];
 var boatAnimation = [];
 var boatDados, boatSpritesheet;
- 
+var boatDeathAnimation = [];
+var boatDeathDados, boatDeathSpritesheet;
+var ballSplash = [];
+var ballSplashDados, ballSplashSpritesheet;
+var gameOver = false;
 
 function preload() {
   backgroundImg = loadImage("./assets/background.gif");
   towerImg = loadImage("./assets/tower.png");
   boatDados = loadJSON("./assets/boat/boat.json");
   boatSpritesheet = loadImage("./assets/boat/boat.png");
+  boatDeathDados = loadJSON("./assets/boat/brokenBoat.json")
+  boatDeathSpritesheet = loadImage("./assets/boat/brokenBoat.png")
+  ballSplashDados = loadJSON("./assets/waterSplash/waterSplash.json")
+  ballSplashSpritesheet = loadImage("./assets/waterSplash/waterSplash.png")
 }
 
 function setup() {
@@ -69,6 +77,20 @@ function setup() {
    var pos = boatFrames[i].position;
    var img = boatSpritesheet.get(pos.x, pos.y, pos.w, pos.h);
    boatAnimation.push(img);
+ }
+
+ var boatDeathFrames = boatDeathDados.frames;
+ for(var i = 0; i < boatDeathFrames.length; i++){
+   var pos = boatDeathFrames[i].position;
+   var img = boatDeathSpritesheet.get(pos.x, pos.y, pos.w, pos.h);
+   boatDeathAnimation.push(img);
+ }
+
+ var ballSplashFrames = ballSplashDados.frames;
+ for(var i = 0; i < ballSplashFrames.length; i++){
+   var pos = ballSplashFrames[i].position;
+   var img = ballSplashSpritesheet.get(pos.x, pos.y, pos.w, pos.h);
+   ballSplash.push(img);
  }
 }
 
@@ -113,6 +135,7 @@ function keyPressed() {
 function cannonShow(ball, i) {
   if(ball) {
     ball.display();
+    ball.animate();
     if(ball.body.position.x >= width || ball.body.position.y >= height-50) { 
       ball.removeBall(i);
     }
@@ -133,6 +156,11 @@ function boatShow() {
         Matter.Body.setVelocity(boats[i].body, {x:-0.9, y:0});
         boats[i].display();
         boats[i].animate();
+        var collisaoVer = Matter.SAT.collides(tower, boats[i].body);
+        if(collisaoVer.collided){
+          gameOver = true;
+          gameOverfun();
+        }
       }
     }
   }
@@ -155,4 +183,19 @@ function colisao(index) {
       }
     }
   }
+}
+
+function gameOverfun(){
+  swal({
+    title: "Fim de Jogo!",
+    text: "Clique no botão para recomeçar",
+    imageUrl: "https://raw.githubusercontent.com/whitehatjr/PiratesInvasion/main/assets/boat.png",
+    imageSize: "150x150",
+    confirmButtonText: "Recomeçar"
+  },
+  function(botaoPressionado){
+    if(botaoPressionado){
+      location.reload();
+    }
+  })
 }

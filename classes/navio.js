@@ -8,6 +8,7 @@ class Boat {
       this.boatPosition = boatPos;
       this.animation = boatAnimation;
       this.velocidade = 0.05;
+      this.sink = false;
       World.add(world, this.body);
     }
   
@@ -29,6 +30,12 @@ class Boat {
     }
 
     removeBoat(index) { 
+      this.animation = boatDeathAnimation;
+      this.velocidade = 0.05;
+      this.width = 300;
+      this.height = 300;
+      this.sink = true;
+
       setTimeout(() => { 
         Matter.World.remove(world, boats[index].body);
         delete boats[index];
